@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- 外部白色圆环边框 -->
+  <circle cx="200" cy="200" r="190" fill="none" stroke="#ffffff" stroke-width="10"/>
+  
+  <!-- 内部蓝色圆形 -->
+  <circle cx="200" cy="200" r="170" fill="#0056b3"/>
+  
+  <!-- 文本路径定义 -->
+  <defs>
+    <path id="chineseTextPath" d="M 70,200 A 130,130 0 1,1 330,200" fill="none"/>
+    <path id="englishTextPath" d="M 330,200 A 130,130 0 1,1 70,200" fill="none"/>
+  </defs>
+  
+  <!-- 上部中文文字：江西工业工程学院 -->
+  <text font-family="SimSun, serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    <textPath href="#chineseTextPath" startOffset="35%">江西工业工程学院</textPath>
+  </text>
+  
+  <!-- JX标志 -->
+  <g transform="translate(150, 160) scale(0.8)">
+    <path d="M20,10 L20,80 Q20,90 30,90 H60 Q70,90 70,80 L70,30 Q70,20 60,20 H30 Q20,20 20,30 Z" fill="#ffffff"/>
+    <path d="M90,10 L130,90 M130,10 L90,90" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  
+  <!-- 工字 -->
+  <text x="230" y="210" font-family="SimSun, serif" font-size="60" font-weight="bold" fill="#ffffff" text-anchor="middle">工</text>
+  
+  <!-- 1956年份 -->
+  <text x="200" y="280" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">1956</text>
+  
+  <!-- 下部英文文字 -->
+  <text font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">
+    <textPath href="#englishTextPath" startOffset="35%">JIANGXI INDUSTRIAL ENGINEERING VOCATIONAL COLLEGE</textPath>
+  </text>
+  
+  <!-- 装饰圆环 -->
+  <circle cx="200" cy="200" r="155" fill="none" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="200" cy="200" r="135" fill="none" stroke="#ffffff" stroke-width="1"/>
+</svg>

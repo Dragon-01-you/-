@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>江西工业工程职业技术学院 - 智能问答系统</title>
+    <style>
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #0c2461 0%, #1e3c72 50%, #2a5298 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* 背景装饰 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0) 50%),
+                        radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0) 50%);
+            z-index: -1;
+            animation: backgroundFloat 20s ease-in-out infinite;
+        }
+        
+        @keyframes backgroundFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* 头部样式 */
+        .header {
+            background: linear-gradient(90deg, #0c2461 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #ffd700;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        
+        .header-info h1 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #ffffff 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header-info p {
+            font-size: 14px;
+            opacity: 0.9;
+            color: #ffd700;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .welcome-message {
+            margin-right: 20px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+        
+        .logout-btn {
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+            color: #0c2461;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .logout-btn:hover {
+            background: linear-gradient(90deg, #ffed4e 0%, #ffd700 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        /* 主体聊天区域 */
+        .chat-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        
+        .chat-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .chat-box {
+            height: 600px;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: #ffd700 #f0f0f0;
+        }
+        
+        /* 滚动条样式 */
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-box::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        
+        .chat-box::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+            border-radius: 4px;
+        }
+        
+        /* 消息样式 */
+        .message {
+            margin-bottom: 20px;
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .message:hover {
+            transform: translateY(-2px);
+        }
+        
+        .user-message {
+            background: linear-gradient(135deg, #0c2461 0%, #2a5298 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(12, 36, 97, 0.3);
+        }
+        
+        .ai-message {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #0c2461;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .ai-message p {
+            margin-bottom: 10px;
+        }
+        
+        .ai-message p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .message-source {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #E0E0E0;
+        }
+        
+        .source-list {
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .source-item {
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+            color: #0c2461;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .source-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .realtime-badge {
+            background-color: #ff4d4d;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .recent-badge {
+            background-color: #2a5298;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .common-badge {
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+            color: #0c2461;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        /* 欢迎消息 */
+        .welcome-message-box {
+            background: linear-gradient(135deg, #0c2461 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(12, 36, 97, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .welcome-message-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .welcome-message-box h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #ffffff 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .welcome-message-box p {
+            font-size: 15px;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+        
+        .welcome-message-box ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-message-box li {
+            font-size: 14px;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 10px;
+        }
+        
+        .welcome-message-box li::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            border-radius: 50%;
+        }
+        
+        /* 加载指示器 */
+        .loading {
+            display: none;
+            align-self: flex-start;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 输入区域 */
+        .input-area {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        
+        .input-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        .chat-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 30px;
+            font-size: 16px;
+            resize: none;
+            min-height: 50px;
+            max-height: 150px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .chat-input:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #0c2461 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(12, 36, 97, 0.3);
+            align-self: flex-end;
+        }
+        
+        .send-btn:hover {
+            background: linear-gradient(135deg, #2a5298 0%, #0c2461 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(12, 36, 97, 0.4);
+        }
+        
+        .send-btn:disabled {
+            background: #CCCCCC;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* 未登录提示 */
+        .not-logged-in {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .not-logged-in h2 {
+            color: #0c2461;
+            margin-bottom: 25px;
+            font-size: 24px;
+            background: linear-gradient(90deg, #0c2461 0%, #2a5298 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .not-logged-in p {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .login-link-btn {
+            background: linear-gradient(135deg, #0c2461 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(12, 36, 97, 0.4);
+        }
+        
+        .login-link-btn:hover {
+            background: linear-gradient(135deg, #2a5298 0%, #0c2461 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(12, 36, 97, 0.5);
+        }
+        
+        /* 错误提示 */
+        .error-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .error-content {
+            background: rgba(255, 255, 255, 0.95);
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .error-content h3 {
+            color: #d32f2f;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .error-content p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .error-close-btn {
+            background: linear-gradient(135deg, #0c2461 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(12, 36, 97, 0.3);
+        }
+        
+        .error-close-btn:hover {
+            background: linear-gradient(135deg, #2a5298 0%, #0c2461 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(12, 36, 97, 0.4);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 15px;
+            }
+            
+            .header-left {
+                margin-bottom: 15px;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .header-info h1 {
+                font-size: 18px;
+            }
+            
+            .chat-container {
+                margin: 10px;
+                height: calc(100vh - 20px);
+                border-radius: 10px;
+            }
+            
+            .chat-box {
+                height: calc(100% - 140px);
+                padding: 15px;
+            }
+            
+            .message {
+                max-width: 90%;
+                padding: 12px 16px;
+                border-radius: 15px;
+            }
+            
+            .welcome-message-box {
+                padding: 20px;
+                border-radius: 10px;
+            }
+            
+            .welcome-message-box h2 {
+                font-size: 18px;
+            }
+            
+            .input-area {
+                padding: 15px;
+            }
+            
+            .chat-input {
+                border-radius: 25px;
+            }
+            
+            .send-btn {
+                padding: 12px 20px;
+                border-radius: 25px;
+            }
+            
+            .login-link-btn {
+                padding: 12px 30px;
+                border-radius: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <img src="OKComputer_江西工业智能问答前端/resources/school-logo-final.svg" alt="江西工业工程职业技术学院校徽" class="logo">
+            <div class="header-info">
+                <h1>江西工业工程职业技术学院</h1>
+                <p>智能问答系统</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div id="user-welcome" class="welcome-message">欢迎，<span id="username-display"></span></div>
+            <button id="logout-button" class="logout-btn">退出登录</button>
+        </div>
+    </div>
+    
+    <div class="chat-container">
+        <!-- 登录用户可见内容 -->
+        <div id="chat-content" style="display: none;">
+            <div class="chat-box">
+                <div class="welcome-message-box">
+                    <h2>🎉 欢迎使用江西工业工程职业技术学院智能问答系统！</h2>
+                    <p>我是小尤学长，很高兴为你解答关于学校的各类问题。你可以咨询：</p>
+                    <ul>
+                        <li>🏫 专业设置、课程安排、就业前景</li>
+                        <li>🎓 招生政策、录取分数线、奖学金</li>
+                        <li>🏠 宿舍条件、食堂环境、校园生活</li>
+                        <li>📚 图书馆、考试安排、校园活动</li>
+                        <li>💼 就业指导、实习机会、校企合作</li>
+                    </ul>
+                    <p>请在下方输入你的问题，小尤学长会尽力为你提供准确、全面的信息！</p>
+                </div>
+                <div id="messages" class="messages"></div>
+                <div id="loading" class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>小尤学长正在思考中...</span>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea id="user-input" class="chat-input" placeholder="请输入你的问题..." rows="1"></textarea>
+                </div>
+                <button id="send-button" class="send-btn">发送</button>
+            </div>
+        </div>
+        
+        <!-- 未登录用户可见内容 -->
+        <div id="login-prompt" class="not-logged-in">
+            <h2>请先登录</h2>
+            <p>您好，欢迎访问江西工业工程职业技术学院智能问答系统。为了提供更好的服务，请先登录系统。</p>
+            <a href="login.html" class="login-link-btn">前往登录</a>
+        </div>
+    </div>
+    
+    <!-- 错误提示模态框 -->
+    <div id="error-modal" class="error-modal">
+        <div class="error-content">
+            <h3>出错了</h3>
+            <p id="error-message">系统暂时无法处理您的请求，请稍后重试。</p>
+            <button id="error-close-btn" class="error-close-btn">关闭</button>
+        </div>
+    </div>
+    
+    <script>
+        // 检查登录状态
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const username = localStorage.getItem('username');
+            const sessionId = localStorage.getItem('sessionId');
+            
+            if (isLoggedIn && username && sessionId) {
+                document.getElementById('login-prompt').style.display = 'none';
+                document.getElementById('chat-content').style.display = 'block';
+                document.getElementById('username-display').textContent = username;
+            } else {
+                document.getElementById('login-prompt').style.display = 'block';
+                document.getElementById('chat-content').style.display = 'none';
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            const sessionId = localStorage.getItem('sessionId');
+            
+            // 调用后端登出API
+            fetch('http://localhost:8000/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${sessionId}`
+                }
+            }).finally(() => {
+                // 清除本地存储
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('username');
+                localStorage.removeItem('sessionId');
+                checkLoginStatus();
+                // 跳转到登录页面
+                window.location.href = 'login.html';
+            });
+        }
+        
+        // 发送消息
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value.trim();
+            if (!userInput) return;
+            
+            // 清空输入框
+            document.getElementById('user-input').value = '';
+            adjustTextareaHeight();
+            
+            // 禁用发送按钮
+            document.getElementById('send-button').disabled = true;
+            
+            // 添加用户消息到聊天框
+            const messagesDiv = document.getElementById('messages');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.textContent = userInput;
+            messagesDiv.appendChild(userMessageDiv);
+            
+            // 滚动到底部
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // 显示加载指示器
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'flex';
+            
+            // 调用实际的API
+            const sessionId = localStorage.getItem('sessionId');
+            
+            fetch('http://localhost:8000/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionId}`
+                },
+                body: JSON.stringify({ question: userInput })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // 会话过期，需要重新登录
+                        showError('您的登录已过期，请重新登录');
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('username');
+                        localStorage.removeItem('sessionId');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        return Promise.reject('未授权');
+                    }
+                    throw new Error('网络请求失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 隐藏加载指示器
+                loadingDiv.style.display = 'none';
+                
+                // 添加AI回复到聊天框
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai-message';
+                
+                // 显示回答内容
+                const answerP = document.createElement('p');
+                answerP.textContent = data.answer;
+                aiMessageDiv.appendChild(answerP);
+                
+                // 添加消息来源信息
+                if (data.sources && data.sources.length > 0) {
+                    const sourceDiv = document.createElement('div');
+                    sourceDiv.className = 'message-source';
+                    sourceDiv.textContent = '信息来源:';
+                    
+                    const sourceList = document.createElement('div');
+                    sourceList.className = 'source-list';
+                    
+                    data.sources.forEach(source => {
+                        const sourceItem = document.createElement('div');
+                        sourceItem.className = 'source-item';
+                        
+                        let badgeClass = 'common-badge';
+                        let badgeText = '相关';
+                        
+                        if (source.includes('最新')) {
+                            badgeClass = 'realtime-badge';
+                            badgeText = '最新';
+                        } else if (source.includes('近年')) {
+                            badgeClass = 'recent-badge';
+                            badgeText = '近年';
+                        }
+                        
+                        sourceItem.innerHTML = `<span class="${badgeClass}">${badgeText}</span>${source}`;
+                        sourceList.appendChild(sourceItem);
+                    });
+                    
+                    sourceDiv.appendChild(sourceList);
+                    aiMessageDiv.appendChild(sourceDiv);
+                }
+                
+                messagesDiv.appendChild(aiMessageDiv);
+                
+                // 滚动到底部
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                
+                // 启用发送按钮
+                document.getElementById('send-button').disabled = false;
+            })
+            .catch(error => {
+                // 隐藏加载指示器
+                loadingDiv.style.display = 'none';
+                
+                if (error.message !== '未授权') {
+                    showError('系统暂时无法处理您的请求，请稍后重试');
+                    // 启用发送按钮
+                    document.getElementById('send-button').disabled = false;
+                }
+                
+                console.error('API请求错误:', error);
+            });
+        }
+        
+        // 调整文本框高度
+        function adjustTextareaHeight() {
+            const textarea = document.getElementById('user-input');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        }
+        
+        // 显示错误消息
+        function showError(message) {
+            const errorModal = document.getElementById('error-modal');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorModal.style.display = 'block';
+        }
+        
+        // 关闭错误消息
+        function closeErrorModal() {
+            document.getElementById('error-modal').style.display = 'none';
+        }
+        
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            // 检查登录状态
+            checkLoginStatus();
+            
+            // 退出登录按钮事件
+            document.getElementById('logout-button').addEventListener('click', logout);
+            
+            // 发送按钮事件
+            document.getElementById('send-button').addEventListener('click', sendMessage);
+            
+            // 输入框回车发送
+            document.getElementById('user-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // 自动调整文本框高度
+            document.getElementById('user-input').addEventListener('input', adjustTextareaHeight);
+            
+            // 错误模态框关闭按钮
+            document.getElementById('error-close-btn').addEventListener('click', closeErrorModal);
+            
+            // 点击模态框外部关闭
+            window.addEventListener('click', (e) => {
+                const modal = document.getElementById('error-modal');
+                if (e.target === modal) {
+                    closeErrorModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

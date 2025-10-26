@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>江西工业工程职业技术学院 - 智能问答系统登录</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+                background: linear-gradient(135deg, #1a5276 0%, #2874a6 100%);
+                color: #fff;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            /* 动态背景效果 */
+            body::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(244, 208, 63, 0.1) 0%, transparent 70%);
+                animation: rotate 15s linear infinite;
+                z-index: 0;
+            }
+
+            @keyframes rotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .login-container {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 16px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+                padding: 40px;
+                width: 90%;
+                max-width: 450px;
+                text-align: center;
+                position: relative;
+                z-index: 1;
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            /* 装饰性边框 */
+            .login-container::after {
+                content: '';
+                position: absolute;
+                top: -2px;
+                left: -2px;
+                right: -2px;
+                bottom: -2px;
+                background: linear-gradient(45deg, #1a5276, #f4d03f, #1a5276);
+                z-index: -1;
+                border-radius: 18px;
+                animation: borderAnimation 5s linear infinite;
+                opacity: 0.7;
+            }
+
+            @keyframes borderAnimation {
+                0% { background-position: 0 0; }
+                50% { background-position: 300% 0; }
+                100% { background-position: 0 0; }
+            }
+
+            .logo-section {
+                margin-bottom: 30px;
+                position: relative;
+            }
+
+            .school-logo {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 20px;
+                border-radius: 50%;
+                border: 3px solid #f4d03f;
+                box-shadow: 0 8px 25px rgba(244, 208, 63, 0.3);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                background: white;
+                padding: 5px;
+            }
+
+            .school-logo:hover {
+                transform: scale(1.05);
+                box-shadow: 0 12px 30px rgba(244, 208, 63, 0.4);
+            }
+
+            .system-title {
+                font-size: 24px;
+                color: #1a5276;
+                font-weight: 700;
+                letter-spacing: -0.5px;
+                margin-bottom: 10px;
+            }
+
+            .login-form {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .form-group {
+                position: relative;
+                text-align: left;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #1a5276;
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 14px 16px;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                font-size: 16px;
+                transition: all 0.3s ease;
+                background: rgba(255, 255, 255, 0.8);
+            }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #f4d03f;
+                box-shadow: 0 0 0 4px rgba(244, 208, 63, 0.2);
+                transform: translateY(-2px);
+            }
+
+            .login-btn {
+                background: linear-gradient(135deg, #1a5276 0%, #2874a6 100%);
+                color: white;
+                border: none;
+                padding: 15px;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .login-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                animation: shine 2s infinite;
+            }
+
+            @keyframes shine {
+                100% {
+                    left: 100%;
+                }
+            }
+
+            .login-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(26, 82, 118, 0.4);
+            }
+
+            .login-btn:active {
+                transform: translateY(-1px);
+            }
+
+            .agreement {
+                margin: 15px 0;
+                font-size: 14px;
+                color: #666;
+            }
+
+            .agreement input[type="checkbox"] {
+                margin-right: 8px;
+            }
+
+            .agreement a {
+                color: #1a5276;
+                text-decoration: none;
+            }
+
+            .agreement a:hover {
+                text-decoration: underline;
+            }
+
+            .error-message {
+                color: #e74c3c;
+                font-size: 14px;
+                margin-top: 10px;
+                font-weight: 500;
+                text-align: center;
+                min-height: 20px;
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                overflow: auto;
+            }
+
+            .modal-content {
+                background-color: white;
+                margin: 15% auto;
+                padding: 30px;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 600px;
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+            }
+
+            .modal-header h3 {
+                margin: 0;
+                color: #1a5276;
+            }
+
+            .close-modal {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #666;
+            }
+
+            .modal-content p {
+                margin-bottom: 15px;
+                line-height: 1.6;
+                color: #333;
+            }
+
+            .modal-content h4 {
+                margin-top: 25px;
+                margin-bottom: 10px;
+                color: #1a5276;
+            }
+
+            .modal-content ul {
+                margin-bottom: 15px;
+                padding-left: 20px;
+            }
+
+            .modal-content li {
+                margin-bottom: 8px;
+                line-height: 1.6;
+                color: #333;
+            }
+
+            /* 响应式设计 */
+            @media (max-width: 480px) {
+                .login-container {
+                    padding: 30px 24px;
+                    margin: 20px;
+                }
+
+                .system-title {
+                    font-size: 20px;
+                }
+
+                .school-logo {
+                    width: 100px;
+                    height: 100px;
+                }
+            }
+        </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <img src="OKComputer_江西工业智能问答前端/resources/school-logo-final.svg" alt="江西工业工程职业技术学院校徽" class="school-logo">
+            <h1 class="system-title">江西工业工程职业技术学院智能问答系统</h1>
+        </div>
+        
+        <form id="login-form" class="login-form">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" placeholder="请输入密码" required>
+            </div>
+            
+            <div class="agreement">
+                <input type="checkbox" id="agree" name="agree" required>
+                <label for="agree">我已阅读并同意 <a href="#" id="open-agreement">《用户使用公约》</a> 和 <a href="#" id="open-privacy">《隐私政策》</a></label>
+            </div>
+            
+            <button type="submit" class="login-btn">登录</button>
+            
+            <div id="login-error" class="error-message"></div>
+        </form>
+    </div>
+    
+    <!-- 用户使用公约模态框 -->
+    <div id="agreement-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>用户使用公约</h3>
+                <button class="close-modal" onclick="closeAgreementModal()">&times;</button>
+            </div>
+            <p>欢迎使用江西工业工程职业技术学院智能问答系统。在使用本系统前，请仔细阅读以下条款和条件。继续使用本系统即表示您同意遵守本公约的所有规定。</p>
+            
+            <h4>1. 适用范围</h4>
+            <p>本公约适用于所有使用江西工业工程职业技术学院智能问答系统（以下简称"系统"）的用户。</p>
+            
+            <h4>2. 用户行为规范</h4>
+            <ul>
+                <li>用户在使用系统时，应遵守国家法律法规、学校规章制度以及社会公德。</li>
+                <li>用户不得利用系统从事任何违法、违规或损害学校利益的活动。</li>
+                <li>用户应尊重知识产权，不得将系统提供的内容用于商业目的。</li>
+                <li>用户应文明用语，不得发送侮辱、诽谤、色情、暴力等不良信息。</li>
+            </ul>
+            
+            <h4>3. 知识产权</h4>
+            <p>系统中的所有内容（包括但不限于文字、图片、音频、视频等）均受知识产权保护，未经授权，用户不得复制、传播、修改或以其他方式使用。</p>
+            
+            <h4>4. 隐私保护</h4>
+            <p>系统将保护用户的个人信息，不会未经用户同意将用户信息泄露给第三方。具体内容请参阅《隐私政策》。</p>
+            
+            <h4>5. 系统免责声明</h4>
+            <ul>
+                <li>系统提供的信息仅供参考，不构成法律、教育或其他专业建议。</li>
+                <li>学校不对系统中信息的准确性、完整性、时效性作任何保证。</li>
+                <li>由于系统故障、网络中断等原因导致的损失，学校不承担责任。</li>
+            </ul>
+            
+            <h4>6. 公约的修改</h4>
+            <p>学校有权根据实际情况修改本公约，修改后的内容将在系统中公布，用户继续使用系统即表示接受修改后的公约。</p>
+            
+            <h4>7. 法律适用</h4>
+            <p>本公约的解释、效力及纠纷的解决，适用中华人民共和国法律。</p>
+        </div>
+    </div>
+    
+    <!-- 隐私政策模态框 -->
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>隐私政策</h3>
+                <button class="close-modal" onclick="closePrivacyModal()">&times;</button>
+            </div>
+            <p>江西工业工程职业技术学院（以下简称"学校"）重视并保护用户的隐私。本隐私政策旨在说明学校如何收集、使用、保护用户的个人信息。</p>
+            
+            <h4>1. 信息收集</h4>
+            <ul>
+                <li>用户在使用系统时，可能需要提供用户名、密码等基本信息。</li>
+                <li>系统可能自动收集用户的IP地址、浏览器类型、访问时间等技术信息。</li>
+                <li>系统可能记录用户的查询内容、使用习惯等信息，用于改进服务质量。</li>
+            </ul>
+            
+            <h4>2. 信息使用</h4>
+            <ul>
+                <li>学校使用收集的信息提供、维护和改进系统服务。</li>
+                <li>学校可能使用用户信息进行内部分析，以更好地了解用户需求。</li>
+                <li>在获得用户同意的情况下，学校可能使用用户信息进行相关通知。</li>
+            </ul>
+            
+            <h4>3. 信息保护</h4>
+            <ul>
+                <li>学校采取合理的技术和管理措施，保护用户信息的安全。</li>
+                <li>未经用户同意，学校不会向第三方披露用户的个人信息。</li>
+                <li>用户的密码等敏感信息将进行加密存储。</li>
+            </ul>
+            
+            <h4>4. Cookie的使用</h4>
+            <p>系统可能使用Cookie等技术来改善用户体验，用户可以通过浏览器设置拒绝Cookie的使用。</p>
+            
+            <h4>5. 未成年人保护</h4>
+            <p>学校特别重视未成年人的隐私保护，未满18周岁的用户在使用系统前，应当事先获得监护人的同意。</p>
+            
+            <h4>6. 政策的修改</h4>
+            <p>学校有权根据实际情况修改本隐私政策，修改后的内容将在系统中公布。</p>
+            
+            <h4>7. 联系我们</h4>
+            <p>如对本隐私政策有任何疑问，请联系学校信息化办公室。</p>
+        </div>
+    </div>
+    
+    <script>
+        // 打开用户使用公约模态框
+        document.getElementById('open-agreement').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('agreement-modal').style.display = 'block';
+        });
+        
+        // 打开隐私政策模态框
+        document.getElementById('open-privacy').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('privacy-modal').style.display = 'block';
+        });
+        
+        // 关闭用户使用公约模态框
+        function closeAgreementModal() {
+            document.getElementById('agreement-modal').style.display = 'none';
+        }
+        
+        // 关闭隐私政策模态框
+        function closePrivacyModal() {
+            document.getElementById('privacy-modal').style.display = 'none';
+        }
+        
+        // 点击模态框外部关闭模态框
+        window.addEventListener('click', function(event) {
+            const agreementModal = document.getElementById('agreement-modal');
+            const privacyModal = document.getElementById('privacy-modal');
+            
+            if (event.target === agreementModal) {
+                agreementModal.style.display = 'none';
+            }
+            if (event.target === privacyModal) {
+                privacyModal.style.display = 'none';
+            }
+        });
+        
+        // 登录表单提交
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const agreeTerms = document.getElementById('agree').checked;
+            const errorElement = document.getElementById('login-error');
+            
+            // 表单验证
+            if (!username || !password) {
+                errorElement.textContent = '请输入用户名和密码';
+                return;
+            }
+            
+            if (!agreeTerms) {
+                errorElement.textContent = '请阅读并同意用户使用公约和隐私政策';
+                return;
+            }
+            
+            // 调用后端登录API
+            fetch('http://localhost:8000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('登录失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 保存登录状态
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', username);
+                localStorage.setItem('sessionId', data.session_id);
+                // 跳转到主页面
+                window.location.href = 'index.html';
+            })
+            .catch(error => {
+                errorElement.textContent = '用户名或密码错误，请重试';
+                console.error('登录错误:', error);
+            });
+        });
+    </script>
+</body>
+</html>

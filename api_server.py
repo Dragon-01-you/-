@@ -95,17 +95,21 @@ app = FastAPI(
 
 # 配置静态文件服务
 try:
-    # 配置静态文件目录
+    # 配置多个静态文件目录
+    # 1. 主要的resources目录
     app.mount("/static", StaticFiles(directory="./OKComputer_江西工业智能问答前端/resources"), name="static")
-    logger.info("静态文件服务已配置")
+    logger.info("静态文件服务已配置: /static -> ./OKComputer_江西工业智能问答前端/resources")
+    
+    # 2. 为前端目录配置静态访问，解决直接引用前端资源的问题
+    app.mount("/OKComputer_江西工业智能问答前端", StaticFiles(directory="./OKComputer_江西工业智能问答前端"), name="frontend")
+    logger.info("前端目录静态服务已配置: /OKComputer_江西工业智能问答前端 -> ./OKComputer_江西工业智能问答前端")
+    
+    # 3. 配置根目录的静态文件访问
+    app.mount("/resources", StaticFiles(directory="./OKComputer_江西工业智能问答前端/resources"), name="root_resources")
+    logger.info("根目录资源服务已配置: /resources -> ./OKComputer_江西工业智能问答前端/resources")
+    
 except Exception as e:
-    logger.warning(f"配置静态文件服务时出错: {str(e)}")
-    # 如果失败，尝试使用当前目录
-    try:
-        app.mount("/static", StaticFiles(directory="resources"), name="static")
-        logger.info("使用备选静态文件目录")
-    except Exception as e2:
-        logger.error(f"配置静态文件服务失败: {str(e2)}")
+    logger.error(f"配置静态文件服务失败: {str(e)}")
 
 # 配置CORS - 支持环境变量和动态配置
 # 从环境变量获取允许的源，如果没有设置则使用默认值
@@ -182,8 +186,9 @@ async def login(request: LoginRequest):
 
 # 初始化向量数据库工具，添加错误处理以确保服务器能够启动
 try:
-    vector_db = VectorDBUtils()
-    logger.info("向量数据库工具初始化完成")
+    # 修改为使用现有的vector_db目录
+    vector_db = VectorDBUtils(persist_directory="./vector_db")
+    logger.info("向量数据库工具初始化完成，使用目录: ./vector_db")
 except Exception as e:
     logger.error(f"向量数据库工具初始化失败，但服务器将继续运行: {str(e)}")
     # 创建一个最小化的VectorDBUtils替代类以确保服务能够运行
@@ -714,24 +719,104 @@ async def root():
     根路径，返回前端页面
     """
     try:
-        with open("index.html", "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
+        # 首先尝试从前端目录读取index.html
+        try:
+            with open("./OKComputer_江西工业智能问答前端/index.html", "r", encoding="utf-8") as f:
+                content = f.read()
+            return HTMLResponse(content=content)
+        except:
+            # 如果失败，尝试当前目录
+            with open("index.html", "r", encoding="utf-8") as f:
+                content = f.read()
+            return HTMLResponse(content=content)
     except Exception as e:
         logger.error(f"读取index.html失败: {str(e)}")
-        return HTMLResponse(content="<h1>页面加载失败</h1><p>请稍后再试</p>")
+        return HTMLResponse(content="<h1>江西工业智能问答系统</h1><p>页面加载失败，请稍后重试</p>")
 
 @app.get("/login")
 async def login_page():
-    """
-    登录页面
-    """
+    """登录页面"""
     try:
-        with open("login.html", "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
+        # 首先尝试从前端目录读取login.html
+        try:
+            with open("./OKComputer_江西工业智能问答前端/login.html", "r", encoding="utf-8") as f:
+                content = f.read()
+            return HTMLResponse(content=content)
+        except:
+            # 如果失败，尝试当前目录
+            with open("login.html", "r", encoding="utf-8") as f:
+                content = f.read()
+            return HTMLResponse(content=content)
     except Exception as e:
-        logger.warning(f"读取login.html失败: {str(e)}")
-        # 如果login.html不存在，重定向到根路径
-        return root()
+        logger.error(f"读取login.html失败: {str(e)}")
+        # 返回默认登录页面HTML
+        default_login_html = """
+        <!DOCTYPE html>
+        <html lang="zh-CN">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>登录 - 江西工业智能问答系统</title>
+        </head>
+        <body>
+            <h1>江西工业智能问答系统 - 登录</h1>
+            <form id="loginForm">
+                <div>
+                    <label for="username">用户名:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div>
+                    <label for="password">密码:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+            <div id="errorMessage" style="color: red; margin-top: 10px;"></div>
+            
+            <script>
+                document.getElementById('loginForm').onsubmit = async function(e) {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value;
+                    const password = document.getElementById('password').value;
+                    
+                    try {
+                        const response = await fetch('/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username, password })
+                        });
+                        
+                        const result = await response.json();
+                        if (response.ok) {
+                            // 登录成功，存储token并跳转到主页
+                            localStorage.setItem('authToken', result.token);
+                            window.location.href = '/';
+                        } else {
+                            document.getElementById('errorMessage').textContent = result.detail || '登录失败';
+                        }
+                    } catch (err) {
+                        document.getElementById('errorMessage').textContent = '网络错误，请稍后重试';
+                    }
+                };
+            </script>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=default_login_html)
+
+@app.get("/login.html")
+async def login_html_page():
+    """login.html路径处理"""
+    # 重定向到/login端点
+    return await login_page()
+
+@app.get("/@vite/client")
+async def vite_client():
+    """处理Vite客户端请求"""
+    # 返回空的JavaScript以避免页面错误
+    return {"detail": "Vite开发服务器不可用，使用生产模式"}
 
 @app.on_event("shutdown")
 async def shutdown_event():

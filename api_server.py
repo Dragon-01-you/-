@@ -93,10 +93,31 @@ app = FastAPI(
     openapi_url="/api/openapi.json"
 )
 
-# 配置CORS
+# 配置静态文件服务
+try:
+    # 配置静态文件目录
+    app.mount("/static", StaticFiles(directory="./OKComputer_江西工业智能问答前端/resources"), name="static")
+    logger.info("静态文件服务已配置")
+except Exception as e:
+    logger.warning(f"配置静态文件服务时出错: {str(e)}")
+    # 如果失败，尝试使用当前目录
+    try:
+        app.mount("/static", StaticFiles(directory="resources"), name="static")
+        logger.info("使用备选静态文件目录")
+    except Exception as e2:
+        logger.error(f"配置静态文件服务失败: {str(e2)}")
+
+# 配置CORS - 支持环境变量和动态配置
+# 从环境变量获取允许的源，如果没有设置则使用默认值
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
+# 处理通配符情况
+if "*" in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 生产环境应设置具体域名
+    allow_origins=ALLOWED_ORIGINS,  # 可通过环境变量配置
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -686,6 +707,31 @@ async def startup_event():
     asyncio.create_task(start_warmup_task())
     
     logger.info("江西工业智能问答系统启动完成，优化任务已启动")
+
+@app.get("/")
+async def root():
+    """
+    根路径，返回前端页面
+    """
+    try:
+        with open("index.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except Exception as e:
+        logger.error(f"读取index.html失败: {str(e)}")
+        return HTMLResponse(content="<h1>页面加载失败</h1><p>请稍后再试</p>")
+
+@app.get("/login")
+async def login_page():
+    """
+    登录页面
+    """
+    try:
+        with open("login.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except Exception as e:
+        logger.warning(f"读取login.html失败: {str(e)}")
+        # 如果login.html不存在，重定向到根路径
+        return root()
 
 @app.on_event("shutdown")
 async def shutdown_event():

@@ -321,14 +321,16 @@ async def startup_event():
     logger.info(f"CORS 允许的源: {ALLOWED_ORIGINS}")
     logger.info("应用启动完成")
 
-# 创建Mangum处理器
-try:
-    import mangum
-    handler = mangum.Mangum(app)
-except ImportError:
-    logger.warning("mangum未安装，跳过AWS Lambda处理器配置")
-    # 为PythonAnywhere创建一个简单的handler
-    handler = app
+# 为PythonAnywhere创建handler
+handler = app
+
+# 如果需要AWS Lambda支持，可以取消下面的注释
+# try:
+#     import mangum
+#     handler = mangum.Mangum(app)
+# except ImportError:
+#     logger.warning("mangum未安装，使用默认handler")
+#     handler = app
 
 if __name__ == "__main__":
     import uvicorn

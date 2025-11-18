@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Depends, Request, Header, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, HTMLResponse, StreamingResponse
+from fastapi.responses import JSONResponse, HTMLResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
@@ -97,8 +97,8 @@ app = FastAPI(
 try:
     # 配置多个静态文件目录
     # 1. 主要的resources目录
-    app.mount("/static", StaticFiles(directory="./OKComputer_江西工业智能问答前端/resources"), name="static")
-    logger.info("静态文件服务已配置: /static -> ./OKComputer_江西工业智能问答前端/resources")
+    app.mount("/resources", StaticFiles(directory="./OKComputer_江西工业智能问答前端/resources"), name="resources")
+    logger.info("静态文件服务已配置: /resources -> ./OKComputer_江西工业智能问答前端/resources")
     
     # 2. 为前端目录配置静态访问，解决直接引用前端资源的问题
     app.mount("/OKComputer_江西工业智能问答前端", StaticFiles(directory="./OKComputer_江西工业智能问答前端"), name="frontend")
@@ -110,6 +110,16 @@ try:
     
 except Exception as e:
     logger.error(f"配置静态文件服务失败: {str(e)}")
+
+# 配置默认路由到前端页面
+@app.get("/")
+async def root():
+    """根路径重定向到前端页面"""
+    try:
+        return FileResponse("./OKComputer_江西工业智能问答前端/index.html")
+    except:
+        # 如果找不到文件，返回简单的HTML响应
+        return HTMLResponse(content="江西工业智能问答系统已启动")
 
 # 配置CORS - 支持环境变量和动态配置
 # 从环境变量获取允许的源，如果没有设置则使用默认值
@@ -842,7 +852,7 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000,
         log_level="info",
-        reload=True,
+        reload=False,
         workers=4,  # 启用多进程处理
         timeout_keep_alive=60,  # 增加超时时间
         access_log=True  # 启用访问日志

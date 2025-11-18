@@ -8,8 +8,8 @@ class ChatSystem {
         this.messageInput = document.getElementById('messageInput');
         this.sendButton = document.getElementById('sendButton');
         
-        // 静态API URL，直接设置
-        this.apiUrl = 'http://localhost:8000/api/ask';
+        // 使用相对路径API URL，配合vercel.json的代理配置
+        this.apiUrl = '/api/ask';
         
         // 初始化事件监听器
         this.initListeners();
@@ -36,14 +36,48 @@ class ChatSystem {
         const message = this.messageInput.value.trim();
         if (!message) return;
         
-        // 简单添加消息到界面
+        // 添加用户消息到界面
         this.addMessage('user', message);
         this.messageInput.value = '';
         
-        // 模拟机器人回复
-        setTimeout(() => {
-            this.addMessage('bot', '这是一条模拟回复。网站图标已添加，您可以在浏览器标签页查看。');
-        }, 500);
+        // 显示加载状态
+        const loadingMessage = this.addMessage('bot', '正在思考...');
+        
+        // 调用真实API
+        fetch(this.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ question: message })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('API请求失败');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 移除加载消息
+            if (loadingMessage && loadingMessage.parentNode) {
+                loadingMessage.parentNode.removeChild(loadingMessage);
+            }
+            
+            // 显示API返回的回答
+            if (data.answer) {
+                this.addMessage('bot', data.answer);
+            } else {
+                this.addMessage('bot', '抱歉，未能获取到回答，请稍后重试。');
+            }
+        })
+        .catch(error => {
+            console.error('API调用错误:', error);
+            // 移除加载消息
+            if (loadingMessage && loadingMessage.parentNode) {
+                loadingMessage.parentNode.removeChild(loadingMessage);
+            }
+            this.addMessage('bot', '服务暂时不可用，请稍后再试。');
+        });
     }
     
     addMessage(type, content) {
@@ -55,6 +89,8 @@ class ChatSystem {
         
         this.chatMessages.appendChild(msgDiv);
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        
+        return msgDiv; // 返回创建的消息元素，便于后续操作
     }
 }
 
@@ -69,6 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const chatSystem = new ChatSystem();
         
         // 显示欢迎消息
-        chatSystem.addMessage('bot', '欢迎使用江西工业智能问答系统！网站图标已成功添加。');
+        chatSystem.addMessage('bot', '欢迎使用江西工业智能问答系统！请输入您的问题。');
     }
 });
